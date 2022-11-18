@@ -1,3 +1,9 @@
+# class Node():
+#     def __init__(self, state, parent):
+#         self.state = state
+#         self.actor = state[1]
+#         self.parent = parent
+        
 class Node():
     def __init__(self, state, parent, action):
         self.state = state
@@ -14,6 +20,10 @@ class StackFrontier():
 
     def contains_state(self, state):
         return any(node.state == state for node in self.frontier)
+
+    def has_actor(self, actor):
+        return any(node.actor == actor for node in self.frontier)
+
 
     def empty(self):
         return len(self.frontier) == 0
