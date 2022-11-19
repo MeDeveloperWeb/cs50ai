@@ -4,8 +4,7 @@ Tic Tac Toe Player
 
 import math
 import copy
-import random
-
+import time
 X = "X"
 O = "O"
 EMPTY = None
@@ -44,7 +43,12 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    raise NotImplementedError
+    action = set()
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] is EMPTY:
+                action.add((i,j))
+    return action
 
 
 def result(board, action):
@@ -111,15 +115,56 @@ def utility(board):
         return -1
     elif victor is X:
         return 1
-    return None
+    return 0
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    choice = []
-    for i in range(len(board)):
-        for j in range(len(board)):
-            if board[i][j] is EMPTY:
-                choice.append((i,j))
-    return random.choice(choice)
+    # choice = actions(board)
+    # return random.choice(list(choice))
+    opt_action = (0,0)
+    if player(board) is O:
+        score = math.inf
+        for action in actions(board):
+            new_score = maxScore(result(board, action), -math.inf, math.inf)
+            if score > new_score:
+                score = new_score
+                opt_action = action
+    else:
+        score = -math.inf
+        actions_set = actions(board)
+        if (len(actions_set) == 9):
+            return (0,2)
+        for action in actions_set:
+            new_score = minScore(result(board, action), -math.inf, math.inf)
+            if score < new_score:
+                score = new_score
+                opt_action = action
+    return opt_action
+
+def minScore(board, alpha, beta):
+    if terminal(board):
+        return utility(board)
+
+    score = math.inf
+    
+    for action in actions(board):
+        score = min(score, maxScore(result(board, action), alpha, beta))
+        beta = min( beta, score)
+        if beta <= alpha:
+            break
+    return score 
+
+def maxScore(board, alpha, beta):
+    if terminal(board):
+        return utility(board)
+
+    score = -math.inf
+    
+    for action in actions(board):
+        score = max(score, minScore(result(board, action), alpha, beta))
+        alpha = max(alpha, score)
+        if beta <= alpha:
+            break
+    return score 
